@@ -14,11 +14,11 @@ jobs:
   - task: delete-old-artifacts
     file: minio-cleaner-git-repo/ci/tasks/delete-old-artifacts.yml
     params:
-      host: ((minio-host))
-      access_key: ((minio-access-key))
-      secret_key: ((minio-secret-key))
-      prefix: ((minio-backup-prefix))
+      host: ((host))
+      access_key: ((access-key))
+      secret_key: ((secret-key))
+      prefix: ((backup-prefix))
       use_ssl: ((use-ssl))
       dry_run: ((dry-run))
-      bucket: ((minio-bucket))
+      bucket: ((bucket))
       backups_to_keep: ((backups-to-keep))
