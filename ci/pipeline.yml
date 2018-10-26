@@ -18,7 +18,7 @@ jobs:
       access_key: ((minio-access-key))
       secret_key: ((minio-secret-key))
       prefix: ((minio-backup-prefix))
-      use_ssl: true
-      dry_run: true
+      use_ssl: ((use-ssl))
+      dry_run: ((dry-run))
       bucket: ((minio-bucket))
       backups_to_keep: ((backups-to-keep))
