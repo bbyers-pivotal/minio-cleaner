@@ -9,7 +9,7 @@ jobs:
 - name: clean-up-minio
   plan:
   - get: minio-cleaner-git-repo
-    passed: [bbr-backup]
+#    passed: [bbr-backup]
     trigger: true
   - task: delete-old-artifacts
     file: minio-cleaner-git-repo/ci/tasks/delete-old-artifacts.yml
