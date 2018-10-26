@@ -15,3 +15,4 @@ minio-cleaner
 #omit build dirs
 .idea
 vendor/
+params.yml

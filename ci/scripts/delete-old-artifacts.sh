@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 set -e
 
-minio-cleaner -host=${host} -access-key=${access-key} -secret-key=${secret-key} -prefix=${prefix} -bucket=${bucket} -backups-to-keep=${backups-to-keep} -use-ssl=${use-ssl} -dry-run=${dry-run}
+minio-cleaner -host=${host} -access-key=${access_key} -secret-key=${secret_key} -prefix=${prefix} -bucket=${bucket} -backups-to-keep=${backups_to_keep} -use-ssl=${use_ssl} -dry-run=${dry_run}

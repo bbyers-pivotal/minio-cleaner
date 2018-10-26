@@ -15,10 +15,10 @@ run:
 
 params:
   host:
-  access-key:
-  secret-key:
+  access_key:
+  secret_key:
   prefix:
-  use-ssl:
-  dry-run:
+  use_ssl:
+  dry_run:
   bucket:
-  backups-to-keep:
+  backups_to_keep:
