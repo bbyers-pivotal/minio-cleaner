@@ -1,11 +1,18 @@
+resources:
+- name: minio-cleaner-git-repo
+  type: git
+  source:
+    uri: https://github.com/bbyers-pivotal/minio-cleaner.git
+    branch: master
+
 jobs:
 - name: clean-up-minio
   plan:
-  - get: git-repo
+  - get: minio-cleaner-git-repo
     passed: [bbr-backup]
     trigger: true
   - task: delete-old-artifacts
-    file: git-repo/ci/tasks/delete-old-artifacts.yml
+    file: minio-cleaner-git-repo/ci/tasks/delete-old-artifacts.yml
     params:
       host: ((minio-host))
       access-key: ((minio-access-key))

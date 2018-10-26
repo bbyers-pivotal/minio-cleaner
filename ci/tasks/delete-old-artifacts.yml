@@ -7,12 +7,11 @@ image_resource:
     repository: brianbyers/minio-cleaner
     tag: "latest"
 
-
 inputs:
-- name: git-repo
+- name: minio-cleaner-git-repo
 
 run:
-  path: git-repo/ci/scripts/delete-old-artifacts.sh
+  path: minio-cleaner-git-repo/ci/scripts/delete-old-artifacts.sh
 
 params:
   host:
