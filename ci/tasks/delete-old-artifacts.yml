@@ -1,0 +1,25 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: brianbyers/minio-cleaner
+    tag: "latest"
+
+
+inputs:
+- name: git-repo
+
+run:
+  path: git-repo/ci/scripts/delete-old-artifacts.sh
+
+params:
+  host:
+  access-key:
+  secret-key:
+  prefix:
+  use-ssl:
+  dry-run:
+  bucket:
+  backups-to-keep:

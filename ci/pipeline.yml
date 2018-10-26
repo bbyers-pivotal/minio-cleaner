@@ -1,11 +1,17 @@
 jobs:
-- name: build-artifact
+- name: clean-up-minio
   plan:
   - get: git-repo
-    passed: [unit-tests]
+    passed: [bbr-backup]
     trigger: true
-  - task: clean-artifacts
-    file: git-repo/ci/tasks/build-artifact.yml
-    timeout: 5m
+  - task: delete-old-artifacts
+    file: git-repo/ci/tasks/delete-old-artifacts.yml
     params:
-      base_name: pcf-ers-demo
+      host: ((minio-host))
+      access-key: ((minio-access-key))
+      secret-key: ((minio-secret-key))
+      prefix: ((minio-backup-prefix))
+      use-ssl: true
+      dry-run: true
+      bucket: ((minio-bucket))
+      backups-to-keep: ((backups-to-keep))
