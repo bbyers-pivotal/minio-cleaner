@@ -1,0 +1,4 @@
+package: minio-cleaner
+import:
+- package: github.com/minio/minio-go
+  version: ^6.0.9

@@ -1,0 +1,11 @@
+jobs:
+- name: build-artifact
+  plan:
+  - get: git-repo
+    passed: [unit-tests]
+    trigger: true
+  - task: clean-artifacts
+    file: git-repo/ci/tasks/build-artifact.yml
+    timeout: 5m
+    params:
+      base_name: pcf-ers-demo

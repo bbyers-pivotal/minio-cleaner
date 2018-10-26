@@ -1,0 +1,37 @@
+hash: b85e57d9faefa1108425b412f9541e116b0a6ab68220bc136f1ee5e293a3e90c
+updated: 2018-10-25T11:33:25.281217-05:00
+imports:
+- name: github.com/go-ini/ini
+  version: 9c8236e659b76e87bf02044d06fde8683008ff3e
+- name: github.com/minio/minio-go
+  version: 31e3bbc8590bf72d763be83a191836f02eb61437
+  subpackages:
+  - pkg/credentials
+  - pkg/encrypt
+  - pkg/s3signer
+  - pkg/s3utils
+  - pkg/set
+- name: github.com/mitchellh/go-homedir
+  version: ae18d6b8b3205b561c79e8e5f69bff09736185f4
+- name: golang.org/x/crypto
+  version: 85e1b3f9139abd58575d728a509643924e3b2ebf
+  subpackages:
+  - argon2
+  - blake2b
+- name: golang.org/x/net
+  version: 9b4f9f5ad5197c79fd623a3638e70d8b26cef344
+  subpackages:
+  - http/httpguts
+  - idna
+- name: golang.org/x/sys
+  version: d989b31c87461dc8ab2f1cac6792814e27fadea9
+  subpackages:
+  - cpu
+- name: golang.org/x/text
+  version: 4d1c5fb19474adfe9562c9847ba425e7da817e81
+  subpackages:
+  - secure/bidirule
+  - transform
+  - unicode/bidi
+  - unicode/norm
+testImports: []
