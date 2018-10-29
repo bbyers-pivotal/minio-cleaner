@@ -12,18 +12,18 @@ import (
 	"time"
 )
 
-type minioFile struct {
+type minioFileInfo struct {
 	filename string
 	date     time.Time
 }
 
-type timeSlice []minioFile
+type minioFile []minioFileInfo
 
-func (s timeSlice) Less(i, j int) bool            { return s[i].date.Before(s[j].date) }
-func (s timeSlice) Swap(i, j int)                 { s[i], s[j] = s[j], s[i] }
-func (s timeSlice) Len() int                      { return len(s) }
-func (s timeSlice) ToDelete(keep int) []minioFile { return s[keep:len(s)] }
-func (s timeSlice) ToKeep(keep int) []minioFile   { return s[0:keep] }
+func (s minioFile) Less(i, j int) bool                { return s[i].date.Before(s[j].date) }
+func (s minioFile) Swap(i, j int)                     { s[i], s[j] = s[j], s[i] }
+func (s minioFile) Len() int                          { return len(s) }
+func (s minioFile) ToDelete(keep int) []minioFileInfo { return s[keep:len(s)] }
+func (s minioFile) ToKeep(keep int) []minioFileInfo   { return s[0:keep] }
 
 func main() {
 	endpoint := flag.String("host", "", "Enter Minio host")
@@ -62,7 +62,6 @@ func main() {
 		os.Exit(1)
 	}
 
-
 	// Initialize minio client object.
 	minioClient, err := minio.New(*endpoint, *accessKeyID, *secretAccessKey, *useSSL)
 	if err != nil {
@@ -78,77 +77,64 @@ func main() {
 	}
 
 	isRecursive := true
-	//filePrefixes := []string{"director-backup", "ert-backup", "installation"}
 
 	//before/after size of the prefix'd items -v verbose flag
 
-	//for _, prefix := range filePrefixes {
-		doneCh := make(chan struct{})
-		defer close(doneCh)
+	doneCh := make(chan struct{})
+	defer close(doneCh)
 
-		dateTimes := []minioFile{}
+	minioFiles := []minioFileInfo{}
 
-		objectCh := minioClient.ListObjectsV2(*bucket, *prefix, isRecursive, doneCh)
-		for object := range objectCh {
-			if object.Err != nil {
-				fmt.Println(object.Err)
-				return
-			}
-
-			//setup regex to grab the date pieces from the filenames
-			r, _ := regexp.Compile(`\d{4}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2}`)
-
-			//grab the date portion of the filename
-			stringMatch := r.FindSubmatch([]byte(object.Key))
-
-			//grab the parts that consist of the date and the time so we can format it properly
-			dateString := string(stringMatch[0])
-			dateFormatted := strings.Replace(dateString[0:10], "_", "-", -1)
-			timeFormatted := strings.Replace(dateString[11:len(dateString)], "_", ":", -1)
-
-			//build a new string with the date/time pieces in a parsable format
-			var dateTimeSB strings.Builder
-			dateTimeSB.WriteString(dateFormatted)
-			dateTimeSB.WriteString(" ")
-			dateTimeSB.WriteString(timeFormatted)
-			dateTimeString := dateTimeSB.String()
-
-			dateTime, _ := time.Parse("2006-01-02 15:04:05", dateTimeString)
-
-			//create a new file object we can sort through and be able to delete
-			dateTimes = append(dateTimes, minioFile{date: dateTime, filename: object.Key})
+	objectCh := minioClient.ListObjectsV2(*bucket, *prefix, isRecursive, doneCh)
+	for object := range objectCh {
+		if object.Err != nil {
+			fmt.Println(object.Err)
+			return
 		}
 
-		var dateSlice timeSlice = dateTimes
+		//setup regex to grab the date pieces from the filenames
+		r, _ := regexp.Compile(`\d{4}_\d{2}_\d{2}_\d{2}_\d{2}_\d{2}`)
 
-		//sort files newest first
-		sort.Sort(sort.Reverse(dateSlice))
+		//grab the date portion of the filename
+		stringMatch := r.FindSubmatch([]byte(object.Key))
 
-		if dateSlice.Len() >= *numberOfBackupsToKeep {
-			toDelete := dateSlice.ToDelete(*numberOfBackupsToKeep)
+		//grab the parts that consist of the date and the time so we can format it properly
+		dateTimeStringMatch := string(stringMatch[0])
+		dateChunkFormatted := strings.Replace(dateTimeStringMatch[0:10], "_", "-", -1)
+		timeChunkFormatted := strings.Replace(dateTimeStringMatch[11:len(dateTimeStringMatch)], "_", ":", -1)
 
-			if len(toDelete) > 0 {
-				for _, m := range (toDelete) {
-					if (*dryRun) {
-						fmt.Println("DRY RUN - File " + m.filename + " would be deleted")
-					} else {
-						fmt.Println("Deleting", m.filename)
-						minioClient.RemoveObject(*bucket, m.filename)
-					}
+		//build a new string with the date/time pieces in a parsable format
+		var dateTimeSB strings.Builder
+		dateTimeSB.WriteString(dateChunkFormatted)
+		dateTimeSB.WriteString(" ")
+		dateTimeSB.WriteString(timeChunkFormatted)
+		dateTimeString := dateTimeSB.String()
+
+		dateTime, _ := time.Parse("2006-01-02 15:04:05", dateTimeString)
+
+		//create a new file object we can sort through and be able to delete
+		minioFiles = append(minioFiles, minioFileInfo{date: dateTime, filename: object.Key})
+	}
+
+	var files minioFile = minioFiles
+
+	//sort files newest first
+	sort.Sort(sort.Reverse(files))
+
+	if files.Len() >= *numberOfBackupsToKeep {
+		toDelete := files.ToDelete(*numberOfBackupsToKeep)
+
+		if len(toDelete) > 0 {
+			for _, m := range (toDelete) {
+				if (*dryRun) {
+					fmt.Println("DRY RUN - File " + m.filename + " would be deleted")
+				} else {
+					fmt.Println("Deleting", m.filename)
+					minioClient.RemoveObject(*bucket, m.filename)
 				}
 			}
-
-			//toKeep:= dateSlice.ToKeep(numberOfBackupsToKeep)
-			//
-			//if len(toDelete) > 0 {
-			//	fmt.Println("files to keep")
-			//	for _, m := range(toKeep) {
-			//		fmt.Println(m.filename)
-			//	}
-			//}
-
-		} else {
-			fmt.Println("No backups to prune")
 		}
-	//}
+	} else {
+		fmt.Println("No backups to prune")
+	}
 }
