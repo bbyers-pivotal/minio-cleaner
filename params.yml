@@ -1,8 +1,8 @@
-minio-host: 192.168.10.167:9000
-minio-access-key: 632MS86UGQ1ZDKHGCE0K
-minio-secret-key: 7ZbrB8x82aTR10Hnh1PXGYTxTkBSBogk-kUA2k-P
-chminio-backup-prefix: installation
-use-ssl: true
+host: 192.168.10.167:9000
+access-key: <your key>
+secret-key: <your secret key>
+backup-prefix: installation
+use-ssl: false
 dry-run: true
-minio-bucket: testing
-backups-to-keep: 3
+bucket: bb-buildpacks
+backups-to-keep: 1

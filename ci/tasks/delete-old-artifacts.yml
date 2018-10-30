@@ -11,7 +11,7 @@ inputs:
 - name: minio-cleaner-git-repo
 
 run:
-  path: minio-cleaner-git-repo/ci/scripts/delete-old-artifacts.sh
+  path: minio-cleaner-git-repo/ci/tasks/delete-old-artifacts.sh
 
 params:
   host:
